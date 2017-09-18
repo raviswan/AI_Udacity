@@ -1,0 +1,28 @@
+AI NOTES
+
+- Monty Hall Problem.
+- For Conditional Probability, remember picking a 4 from a deck given a red card. Arrive at the answer with intuition, and use the formula.
+- Monty Hall Problem : Is solved by using Baye's theorem. Where one conditional probability is expressed by the reverse conditional probability and unconditional probability. Remember the formulat.
+- AI terms: Roomba example. Agent, State, Action, Cognition.
+
+-------------------------------------------------------------------------
+		Min-Max / ISOLATION-GAME  with Alpha-beta pruning
+-------------------------------------------------------------------------
+
+- Remember the game where we , player has to be the last to make a move. It's also called Isolation game.
+
+- Your goal is to maximize number of moves. Your opponents goal is to minimize number of moves. For this we gotta , do bottoms-up. Look at the terminating condition. If you win, count it as +1, if opponent wins, make it -1. These values can be anything but the bigger the range between them, better the outcome.
+
+- At your level, your job is to maximize the outcome. Therefore, from your child branches, you pick the max. value of all child branches (for our example +1). At min. level, your opponent would do the opposite. That is pick a minimum value of -1. This percolates all the way to the top to let you visualize which is the best move that yields +1. 
+
+- As the board size gets bigger, the number of combinations to consider at the each level gets exponentially bigger. So we gotta come up with better ways to play in the limited time we get. One way is to limit the number of branches you consider at each level. For e.g at the start of 5x5 game, the "DEPTH", d= 25.
+
+- If you start, you have 25 places to choose from, and your opponent has 24 places to choose from. After that , you don't really have 23 sub-branches to consider for your next move. Some of them may be blocked off. When you run average, you determine that only 9 branches on an average are required per move. Think logically, by the time you get towards the end of the game, you'd have 4 moves to make, you oppoent would have 3, you 2, your opponent 1 and then you lose.
+Now, if we assume we can look athe only 8 branches (called "BRANCHING FACTOR" b) at each level, which branch would you pick. You need a metric for that.   It is established that number of "nodes" minimax" will need to visit is (b^d). In this example, that would be 8^25. This is where you need a heuristic function to compute the metrics . A simple one would be #my_moves. So at the every level, you compute number of remaining moves for you.
+
+If you have a multiplayer isolation game, you form a set of of (3 metrics for 3 player game at each level). [a,b,c]. At the Level 3, you pick the set that maximizes `c` , and propogate it upward. At level 2,
+you pick the set that maximizes 'b'. And at level 1, you pick the set that maximizes 'a'.
+
+Now if you have probability of how often a position is likely to be picked , then it's best to have a range for maximum value each player metric can take . For e.g, if the range is [-10:10], and lets say at a given level, the probability of picking a move is 0.9, and the max metric at the level below that is 10. Then, at current level, you'd have 0.9*10 = 9 . You can denote this as >=9. Now compare this with the peers and you can do what is called Alpha-beta pruning. 
+
+
