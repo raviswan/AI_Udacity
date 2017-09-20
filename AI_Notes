@@ -26,3 +26,6 @@ you pick the set that maximizes 'b'. And at level 1, you pick the set that maxim
 Now if you have probability of how often a position is likely to be picked , then it's best to have a range for maximum value each player metric can take . For e.g, if the range is [-10:10], and lets say at a given level, the probability of picking a move is 0.9, and the max metric at the level below that is 10. Then, at current level, you'd have 0.9*10 = 9 . You can denote this as >=9. Now compare this with the peers and you can do what is called Alpha-beta pruning. 
 
 
+-------Iterative First Deepening Search-----
+
+http://www.geeksforgeeks.org/iterative-deepening-searchids-iterative-deepening-depth-first-searchiddfs/
