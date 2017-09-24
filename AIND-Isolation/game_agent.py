@@ -37,7 +37,8 @@ def custom_score(game, player):
     # TODO: finish this function!
     # raise NotImplementedError
     player_move_count = len(game.get_legal_moves())
-    opponent_move_count = len(game.get_opponent(player).get_legal_moves())
+    opponent = game.get_opponent(player)
+    opponent_move_count = len(game.get_legal_moves(opponent))
     return float(player_move_count ** 2 - opponent_move_count ** 2)
 
 
@@ -67,7 +68,8 @@ def custom_score_2(game, player):
     # TODO: finish this function!
     # opponent_move_count = game.get_opponent(player).get_legal_moves()
     player_move_count = len(game.get_legal_moves())
-    opponent_move_count = len(game.get_opponent(player).get_legal_moves())
+    opponent = game.get_opponent(player)
+    opponent_move_count = len(game.get_legal_moves(opponent))
     return float(player_move_count - 2 * opponent_move_count)
 
 
@@ -95,7 +97,8 @@ def custom_score_3(game, player):
     """
     # TODO: finish this function!
     player_move_count = len(game.get_legal_moves())
-    opponent_move_count = len(game.get_opponent(player).get_legal_moves())
+    opponent = game.get_opponent(player)
+    opponent_move_count = len(game.get_legal_moves(opponent))
     return float(player_move_count - opponent_move_count)
 
 
@@ -115,31 +118,12 @@ def min_value(player, game, depth):
         raise SearchTimeout()
     if terminal_test(game):
         return -100
-    if depth == 0:
+    if depth <= 0:
         return player.score(game, player)
     minVal = float("inf")
     for i in game.get_legal_moves():
         minVal =  min(minVal, max_value(player, game.forecast_move(i), depth-1))
     return minVal
-
-
-def min_value_alpha_beta(player, game, depth, alpha, beta):
-     """ Return the value of compute_score function when depth is zero.
-    otherwise return the minimum value over all legal child
-    nodes.
-    """
-    if player.time_left() < player.TIMER_THRESHOLD:
-        raise SearchTimeout()
-    if terminal_test(game):
-        return -100
-    if depth == 0:
-        return player.score(game, player)
-    minVal = float("inf")
-    for i in game.get_legal_moves():
-        minVal =  min(minVal, max_value(player, game.forecast_move(i), depth-1))
-    return minVal
-
-
 
 def max_value(player, game, depth):
     """  Return the value of compute_score function when depth is zero.
@@ -150,12 +134,29 @@ def max_value(player, game, depth):
         raise SearchTimeout()
     if terminal_test(game):
         return 100
-    if depth == 0:
+    if depth <= 0:
         return player.score(game, player)
     maxVal = float("-inf")
     for i in game.get_legal_moves():
-        maxVal =  max(maxVal, min_value(game.forecast_move(i), depth-1))
+        maxVal =  max(maxVal, min_value(player, game.forecast_move(i), depth-1))
     return maxVal
+
+
+def min_value_alpha_beta(player, game, depth, alpha, beta):
+    """ Return the value of compute_score function when depth is zero.
+    otherwise return the minimum value over all legal child
+    nodes.
+    """
+    if player.time_left() < player.TIMER_THRESHOLD:
+        raise SearchTimeout()
+    if terminal_test(game):
+        return -100
+    if depth <= 0:
+        return player.score(game, player)
+    minVal = alpha
+    for i in game.get_legal_moves():
+        minVal =  min(minVal, max_value_alpha_beta(player, game.forecast_move(i), depth-1, alpha, beta))
+    return minVal
 
 def max_value_alpha_beta(player, game, depth, alpha, beta):
     """  Return the value of compute_score function when depth is zero.
@@ -166,11 +167,11 @@ def max_value_alpha_beta(player, game, depth, alpha, beta):
         raise SearchTimeout()
     if terminal_test(game):
         return 100
-    if depth == 0:
+    if depth <= 0:
         return player.score(game, player)
-    maxVal = float("-inf")
+    maxVal = beta
     for i in game.get_legal_moves():
-        maxVal =  max(maxVal, min_value(game.forecast_move(i), depth-1))
+        maxVal =  max(maxVal, min_value_alpha_beta(player, game.forecast_move(i), depth-1, alpha, beta))
     return maxVal
 
 
@@ -297,11 +298,19 @@ class MinimaxPlayer(IsolationPlayer):
             raise SearchTimeout()
 
         # TODO: finish this function!
-        best_score = float("-inf")
+        # best_score = float("-inf")
+        # best_move = None
+        # for m in game.get_legal_moves():
+        #     v = min_value(self, game.forecast_move(m), depth-1)
+        #     if v > best_score:
+        #         best_score = v
+        #         best_move = m
+        #TODO: finish this function!
+        best_score = float("inf")
         best_move = None
         for m in game.get_legal_moves():
-            v = min_value(self, game.forecast_move(m), depth-1)
-            if v > best_score:
+            v = max_value(self, game.forecast_move(m), depth-1)
+            if v < best_score:
                 best_score = v
                 best_move = m
         return best_move
@@ -356,7 +365,11 @@ class AlphaBetaPlayer(IsolationPlayer):
         try:
             # The try/except block will automatically catch the exception
             # raised when the timer is about to expire.
-            return self.alphabeta(game, self.search_depth, float("-inf"), float("inf"))
+            # TODO: finish this function!
+            best_move = None
+            for i in reversed(range(self.search_depth)): 
+               best_move = self.alphabeta(game, i, float("-inf"), float("inf"))
+                #return self.alphabeta(game, self.search_depth, float("-inf"), float("inf"))
 
         except SearchTimeout:
             pass  # Handle any actions required after timeout as needed
