@@ -116,9 +116,7 @@ def min_value(player, game, depth):
     """
     if player.time_left() < player.TIMER_THRESHOLD:
         raise SearchTimeout()
-    if terminal_test(game):
-        return -100
-    if depth <= 0:
+    if terminal_test(game) or depth <= 0:
         return player.score(game, player)
     minVal = float("inf")
     for i in game.get_legal_moves():
@@ -132,9 +130,7 @@ def max_value(player, game, depth):
     """
     if player.time_left() < player.TIMER_THRESHOLD:
         raise SearchTimeout()
-    if terminal_test(game):
-        return 100
-    if depth <= 0:
+    if terminal_test(game) or depth <= 0:
         return player.score(game, player)
     maxVal = float("-inf")
     for i in game.get_legal_moves():
@@ -149,14 +145,17 @@ def min_value_alpha_beta(player, game, depth, alpha, beta):
     """
     if player.time_left() < player.TIMER_THRESHOLD:
         raise SearchTimeout()
-    if terminal_test(game):
-        return -100
-    if depth <= 0:
+    if terminal_test(game) or depth <= 0:
         return player.score(game, player)
-    minVal = alpha
+    upper_limit = beta
     for i in game.get_legal_moves():
-        minVal =  min(minVal, max_value_alpha_beta(player, game.forecast_move(i), depth-1, alpha, beta))
-    return minVal
+        local_min = max_value_alpha_beta(player, game.forecast_move(i), depth-1, alpha, upper_limit)
+        #minVal =  min(minVal, max_value_alpha_beta(player, game.forecast_move(i), depth-1, alpha, beta))
+        if local_min < upper_limit:
+            upper_limit = local_min
+        if local_min < alpha:
+            return alpha
+    return local_min
 
 def max_value_alpha_beta(player, game, depth, alpha, beta):
     """  Return the value of compute_score function when depth is zero.
@@ -165,14 +164,17 @@ def max_value_alpha_beta(player, game, depth, alpha, beta):
     """
     if player.time_left() < player.TIMER_THRESHOLD:
         raise SearchTimeout()
-    if terminal_test(game):
-        return 100
-    if depth <= 0:
+    if terminal_test(game) or depth <= 0:
         return player.score(game, player)
-    maxVal = beta
+    lower_limit = alpha
     for i in game.get_legal_moves():
-        maxVal =  max(maxVal, min_value_alpha_beta(player, game.forecast_move(i), depth-1, alpha, beta))
-    return maxVal
+        #maxVal =  max(maxVal, min_value_alpha_beta(player, game.forecast_move(i), depth-1, alpha, beta))
+        local_max = min_value_alpha_beta(player, game.forecast_move(i), depth-1, lower_limit, beta)
+        if local_max > lower_limit:
+            lower_limit = local_max
+        if local_max > beta:
+            return beta
+    return local_max
 
 
 class IsolationPlayer:
@@ -297,20 +299,12 @@ class MinimaxPlayer(IsolationPlayer):
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
-        # TODO: finish this function!
-        # best_score = float("-inf")
-        # best_move = None
-        # for m in game.get_legal_moves():
-        #     v = min_value(self, game.forecast_move(m), depth-1)
-        #     if v > best_score:
-        #         best_score = v
-        #         best_move = m
         #TODO: finish this function!
-        best_score = float("inf")
+        best_score = float("-inf")
         best_move = None
         for m in game.get_legal_moves():
-            v = max_value(self, game.forecast_move(m), depth-1)
-            if v < best_score:
+            v = min_value(self, game.forecast_move(m), depth-1)
+            if v > best_score:
                 best_score = v
                 best_move = m
         return best_move
@@ -367,8 +361,8 @@ class AlphaBetaPlayer(IsolationPlayer):
             # raised when the timer is about to expire.
             # TODO: finish this function!
             best_move = None
-            for i in reversed(range(self.search_depth)): 
-               best_move = self.alphabeta(game, i, float("-inf"), float("inf"))
+            for i in range(self.search_depth): 
+               best_move = self.alphabeta(game, i)
                 #return self.alphabeta(game, self.search_depth, float("-inf"), float("inf"))
 
         except SearchTimeout:

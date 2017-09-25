@@ -1,5 +1,15 @@
 AI NOTES
 
+Minimax search and Alpha-Beta Pruning: https://www.cs.cornell.edu/courses/cs312/2002sp/lectures/rec21.htm
+
+DFS, BFS: https://mhesham.wordpress.com/tag/iterative-deepening-depth-first-search/
+
+------- Submitting project -------
+
+source activate aind
+source deactivate aind
+udacity submit <projname>
+
 - Monty Hall Problem.
 - For Conditional Probability, remember picking a 4 from a deck given a red card. Arrive at the answer with intuition, and use the formula.
 - Monty Hall Problem : Is solved by using Baye's theorem. Where one conditional probability is expressed by the reverse conditional probability and unconditional probability. Remember the formulat.
