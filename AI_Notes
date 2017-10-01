@@ -16,7 +16,7 @@ udacity submit <projname>
 - AI terms: Roomba example. Agent, State, Action, Cognition.
 
 -------------------------------------------------------------------------
-		Min-Max / ISOLATION-GAME  with Alpha-beta pruning
+		Min-Max / ISOLATION-GAME 
 -------------------------------------------------------------------------
 
 - Remember the game where we , player has to be the last to make a move. It's also called Isolation game.
@@ -36,6 +36,23 @@ you pick the set that maximizes 'b'. And at level 1, you pick the set that maxim
 Now if you have probability of how often a position is likely to be picked , then it's best to have a range for maximum value each player metric can take . For e.g, if the range is [-10:10], and lets say at a given level, the probability of picking a move is 0.9, and the max metric at the level below that is 10. Then, at current level, you'd have 0.9*10 = 9 . You can denote this as >=9. Now compare this with the peers and you can do what is called Alpha-beta pruning. 
 
 
+
+--------DEPTH LIMITED SEARCH ------
+In this, you basically go upto a fixed depth and return the metrics from there instead of waiting to hit terminal condition. 
+Quiescence is when your branch that is pickec starts to remain the same as you go deeper and deeper.
+
 -------Iterative First Deepening Search-----
 
 http://www.geeksforgeeks.org/iterative-deepening-searchids-iterative-deepening-depth-first-searchiddfs/
+
+In iterative deepening, you run alphabeta function for all depths starting from 0 until until you run out of time. 
+
+----- ALPHA BETA Pruning -----
+Essentially at every minmax level, you compute the local min or local max, starting from left-most branch. And use that
+to prune other moves for the same "for" loop.  
+
+For instance, in max(),  you adjust the alpha for max computation to essentially find values >= alpha for subsequent "for" loop entries of the max(). And this alpha is passed down to the min() one level down  as part of the next index of  "for" loop of the current max (). And if that entry in min() returns a value that is less than alpha we passed in, don't do further computation in min(). Just return. So you pruned the tree.
+
+In min(),  you adjust the beta for min computation to essentially find values <= beta for subsequent "for" loop entries of the min (). And this beta is passed down to the max() one level down as part of the next index of "for" loop of the current min(). And if that entry in the max() returns a value that is greater than beta we passed in, don't do further computation in max(). Just return. So you pruned the tree.
+
+
