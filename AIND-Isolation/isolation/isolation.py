@@ -330,6 +330,7 @@ class Board(object):
                 curr_move = Board.NOT_MOVED
 
             if move_end < 0:
+                #print("move =%d timed out\n" %(self.move_count))
                 return self._inactive_player, move_history, "timeout"
 
             if curr_move not in legal_player_moves:

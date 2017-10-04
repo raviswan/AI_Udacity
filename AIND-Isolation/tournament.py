@@ -23,7 +23,7 @@ from sample_players import (RandomPlayer, open_move_score,
 from game_agent import (MinimaxPlayer, AlphaBetaPlayer, custom_score,
                         custom_score_2, custom_score_3)
 
-NUM_MATCHES = 5  # number of matches against each opponent
+NUM_MATCHES = 10  # number of matches against each opponent
 TIME_LIMIT = 150  # number of milliseconds before timeout
 
 DESCRIPTION = """
@@ -46,6 +46,7 @@ def play_round(cpu_agent, test_agents, win_counts, num_matches):
     """
     timeout_count = 0
     forfeit_count = 0
+    illegal_count = 0
     for _ in range(num_matches):
 
         games = sum([[Board(cpu_agent.player, agent.player),
@@ -60,13 +61,19 @@ def play_round(cpu_agent, test_agents, win_counts, num_matches):
 
         # play all games and tally the results
         for game in games:
+            #print("Round Start")
             winner, _, termination = game.play(time_limit=TIME_LIMIT)
             win_counts[winner] += 1
 
             if termination == "timeout":
+                #print("winner = %s  reason: timeout\n" %(winner.name))
                 timeout_count += 1
             elif termination == "forfeit":
+                #print("winner = %s  reason: forfeit\n" %(winner.name))
                 forfeit_count += 1
+            elif termination == "illegal move":
+                illegal_count += 1
+                #print("winner = %s  reason: illegal move\n" %(winner.name))
 
     return timeout_count, forfeit_count
 
@@ -92,7 +99,6 @@ def play_matches(cpu_agents, test_agents, num_matches):
         wins[agent.player] = 0
 
         print("{!s:^9}{:^13}".format(idx + 1, agent.name), end="", flush=True)
-
         counts = play_round(agent, test_agents, wins, num_matches)
         total_timeouts += counts[0]
         total_forfeits += counts[1]
@@ -129,21 +135,21 @@ def main():
     # Define two agents to compare -- these agents will play from the same
     # starting position against the same adversaries in the tournament
     test_agents = [
-        Agent(AlphaBetaPlayer(score_fn=improved_score), "AB_Improved"),
-        Agent(AlphaBetaPlayer(score_fn=custom_score), "AB_Custom"),
-        Agent(AlphaBetaPlayer(score_fn=custom_score_2), "AB_Custom_2"),
-        Agent(AlphaBetaPlayer(score_fn=custom_score_3), "AB_Custom_3")
+        # Agent(AlphaBetaPlayer("AB_Improved", score_fn=improved_score), "AB_Improved"),
+        Agent(AlphaBetaPlayer("AB_Custom", score_fn=custom_score), "AB_Custom"),
+        Agent(AlphaBetaPlayer("AB_Custom_2", score_fn=custom_score_2), "AB_Custom_2"),
+        Agent(AlphaBetaPlayer("AB_Custom_3", score_fn=custom_score_3), "AB_Custom_3")
     ]
 
     # Define a collection of agents to compete against the test agents
     cpu_agents = [
-        Agent(RandomPlayer(), "Random"),
-        Agent(MinimaxPlayer(score_fn=open_move_score), "MM_Open"),
-        Agent(MinimaxPlayer(score_fn=center_score), "MM_Center"),
-        Agent(MinimaxPlayer(score_fn=improved_score), "MM_Improved"),
-        Agent(AlphaBetaPlayer(score_fn=open_move_score), "AB_Open"),
-        Agent(AlphaBetaPlayer(score_fn=center_score), "AB_Center"),
-        Agent(AlphaBetaPlayer(score_fn=improved_score), "AB_Improved")
+         # Agent(RandomPlayer(), "Random"),
+         # Agent(MinimaxPlayer("MM_Open", score_fn=open_move_score), "MM_Open"),
+         # Agent(MinimaxPlayer("MM_Center",score_fn=center_score), "MM_Center"),
+         # Agent(MinimaxPlayer("MM_Improved",score_fn=improved_score), "MM_Improved"),
+         # Agent(AlphaBetaPlayer("AB_Open",score_fn=open_move_score), "AB_Open"),
+         # Agent(AlphaBetaPlayer("AB_Center", score_fn=center_score), "AB_Center"),
+        Agent(AlphaBetaPlayer("AB_Improved", score_fn=improved_score), "AB_Improved")
     ]
 
     print(DESCRIPTION)

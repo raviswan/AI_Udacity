@@ -34,12 +34,15 @@ def custom_score(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    player_move_count = len(game.get_legal_moves())
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+    player_move_count = len(game.get_legal_moves(player))
     opponent = game.get_opponent(player)
     opponent_move_count = len(game.get_legal_moves(opponent))
-
     return float(player_move_count - 2*opponent_move_count)
-
 
 
 def custom_score_2(game, player):
@@ -64,10 +67,16 @@ def custom_score_2(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    player_move_count = len(game.get_legal_moves())
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+    player_move_count = len(game.get_legal_moves(player))
     opponent = game.get_opponent(player)
     opponent_move_count = len(game.get_legal_moves(opponent))
-    return float(player_move_count**2 - opponent_move_count)
+    return float(player_move_count**2 - opponent_move_count**2)
+
 
 
 def custom_score_3(game, player):
@@ -92,10 +101,18 @@ def custom_score_3(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    player_move_count = len(game.get_legal_moves())
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+    player_move_count = len(game.get_legal_moves(player))
     opponent = game.get_opponent(player)
     opponent_move_count = len(game.get_legal_moves(opponent))
-    return float(player_move_count - 10*opponent_move_count)
+    if player_move_count != opponent_move_count:
+        return float (player_move_count + opponent_move_count)/(player_move_count - opponent_move_count)
+    else:
+        return player_move_count
 
 
 def terminal_test(gameState):
@@ -202,11 +219,12 @@ class IsolationPlayer:
         positive value large enough to allow the function to return before the
         timer expires.
     """
-    def __init__(self, search_depth=3, score_fn=custom_score, timeout=10.):
+    def __init__(self, name, score_fn=custom_score, search_depth=3, timeout=10.):
         self.search_depth = search_depth
         self.score = score_fn
         self.time_left = None
         self.TIMER_THRESHOLD = timeout
+        self.name  = name
 
 
 class MinimaxPlayer(IsolationPlayer):
@@ -350,20 +368,27 @@ class AlphaBetaPlayer(IsolationPlayer):
             (-1, -1) if there are no available legal moves.
         """
         self.time_left = time_left
-
+        max_depth = 1;
         # Initialize the best move so that this function returns something
         # in case the search fails due to timeout
         best_move = (-1, -1)
-
+        #print("new depth\n")
+        depth = 1
         try:
+            #print("starting  depth=%d" %(depth))
             # The try/except block will automatically catch the exception
             # raised when the timer is about to expire.
             best_move = None
-            for i in range(100000):
-               best_move = self.alphabeta(game, i)
+            # for i in range(100000):
+            #     best_move = self.alphabeta(game, i)
+            while True:
+                best_move = self.alphabeta(game, depth)
+                depth +=  1   
         except SearchTimeout:
+            #print("timed out exception with depth=%d" %(depth))
             pass  # Handle any actions required after timeout as needed
 
+        #print("Move: %d; max depth = %d\n" %(game.move_count, max(max_depth, depth)))
         # Return the best move from the last completed search iteration
         return best_move
 
@@ -414,7 +439,7 @@ class AlphaBetaPlayer(IsolationPlayer):
         """
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
-
+        #print("received depth = %d" %(depth))
         best_score = float("-inf")
         best_move = None
         for m in game.get_legal_moves():
