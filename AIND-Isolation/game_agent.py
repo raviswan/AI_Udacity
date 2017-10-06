@@ -219,12 +219,12 @@ class IsolationPlayer:
         positive value large enough to allow the function to return before the
         timer expires.
     """
-    def __init__(self, name, score_fn=custom_score, search_depth=3, timeout=10.):
+    def __init__(self, search_depth=3, score_fn=custom_score, timeout=10.):
         self.search_depth = search_depth
         self.score = score_fn
         self.time_left = None
         self.TIMER_THRESHOLD = timeout
-        self.name  = name
+        #self.name  = name
 
 
 class MinimaxPlayer(IsolationPlayer):
@@ -368,22 +368,24 @@ class AlphaBetaPlayer(IsolationPlayer):
             (-1, -1) if there are no available legal moves.
         """
         self.time_left = time_left
-        max_depth = 1;
+        #max_depth = 1;
+        #print("new depth\n")
+        #depth = 1
+
         # Initialize the best move so that this function returns something
         # in case the search fails due to timeout
         best_move = (-1, -1)
-        #print("new depth\n")
-        depth = 1
+
         try:
             #print("starting  depth=%d" %(depth))
             # The try/except block will automatically catch the exception
             # raised when the timer is about to expire.
             best_move = None
-            # for i in range(100000):
-            #     best_move = self.alphabeta(game, i)
-            while True:
-                best_move = self.alphabeta(game, depth)
-                depth +=  1   
+             # while True:
+             #    best_move = self.alphabeta(game, depth)
+             #    depth +=  1
+            for i in range(100000):
+               best_move = self.alphabeta(game, i)
         except SearchTimeout:
             #print("timed out exception with depth=%d" %(depth))
             pass  # Handle any actions required after timeout as needed
