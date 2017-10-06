@@ -10,9 +10,7 @@ source activate aind
 source deactivate aind
 udacity submit <projname>
 
-- Monty Hall Problem.
-- For Conditional Probability, remember picking a 4 from a deck given a red card. Arrive at the answer with intuition, and use the formula.
-- Monty Hall Problem : Is solved by using Baye's theorem. Where one conditional probability is expressed by the reverse conditional probability and unconditional probability. Remember the formulat.
+
 - AI terms: Roomba example. Agent, State, Action, Cognition.
 
 -------------------------------------------------------------------------
@@ -41,11 +39,11 @@ Now if you have probability of how often a position is likely to be picked , the
 In this, you basically go upto a fixed depth and return the metrics from there instead of waiting to hit terminal condition. 
 Quiescence is when your branch that is pickec starts to remain the same as you go deeper and deeper.
 
--------Iterative First Deepening Search-----
+-------ITERATIVE FIRST DEEPENING SEARCH-----
 
 http://www.geeksforgeeks.org/iterative-deepening-searchids-iterative-deepening-depth-first-searchiddfs/
 
-In iterative deepening, you run alphabeta function for all depths starting from 0 until until you run out of time. 
+In iterative deepening, for every move, you run alphabeta function for all depths starting from 0 until until you run out of time. 
 
 ----- ALPHA BETA Pruning -----
 Essentially at every minmax level, you compute the local min or local max, starting from left-most branch. And use that
@@ -54,5 +52,32 @@ to prune other moves for the same "for" loop.
 For instance, in max(),  you adjust the alpha for max computation to essentially find values >= alpha for subsequent "for" loop entries of the max(). And this alpha is passed down to the min() one level down  as part of the next index of  "for" loop of the current max (). And if that entry in min() returns a value that is less than alpha we passed in, don't do further computation in min(). Just return. So you pruned the tree.
 
 In min(),  you adjust the beta for min computation to essentially find values <= beta for subsequent "for" loop entries of the min (). And this beta is passed down to the max() one level down as part of the next index of "for" loop of the current min(). And if that entry in the max() returns a value that is greater than beta we passed in, don't do further computation in max(). Just return. So you pruned the tree.
+
+
+-------------------------------------------------------------------------
+		SEARCH ALGORITHMS 
+-------------------------------------------------------------------------
+Remember: Frontier set, Explored set and UnExplored set.
+
+BFS: Shortest paths are added first. The new paths are added to the end of the path list. Might need to store 2^n.
+
+Cheapest Cost First: always picks the cheapest path. After new paths are added, it still picks the shortest. So it goes back and forth. Optimal as well.
+
+DFS: Can go on and on. Not optimal. But advantage is very few past states required to store. Of order of n.
+
+A* search: its combo of bfs with heuristic.
+
+goal is to minimize function 
+f = g + h
+where g - path cost as before
+	  h - heuristic to estimate cost to reach goal from that state with cost g. For destination, it can be st. line distance from 
+	  		intermediate point to the goal.
+
+You always pick the minimum f as you continue exploring.
+
+
+
+
+
 
 
