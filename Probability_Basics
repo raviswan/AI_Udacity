@@ -1,0 +1,24 @@
+PROBABILITY
+
+
+- For Conditional Probability, remember picking a 4 from a deck given a red card. Arrive at the answer with intuition, and use the formula
+- Monty Hall Problem:
+- Monty Hall Problem : Is solved by using Baye's theorem. Where one conditional probability is expressed by the reverse conditional probability and unconditional probability. Remember the formula.
+
+
+-Geometric Mean:
+	Of 2,4,8 : cube-root of 2*4*8 
+	of 4*4 : square root of 16 = 4
+
+	It is typically used when you are comparsing across different sets . Refer to wiki
+
+
+Generalized p-Mean : Remember the formula
+
+p=1 is arithmetic mean
+p = 0  is geometric mean
+p=-1 harmonic mean
+
+p =-inf returns min of values
+p = max returns max of values
+

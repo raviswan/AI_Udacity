@@ -57,27 +57,148 @@ In min(),  you adjust the beta for min computation to essentially find values <=
 -------------------------------------------------------------------------
 		SEARCH ALGORITHMS 
 -------------------------------------------------------------------------
-Remember: Frontier set, Explored set and UnExplored set.
 
-BFS: Shortest paths are added first. The new paths are added to the end of the path list. Might need to store 2^n.
+BFS, CFS, DFS, Uniform Cost, Greedy Best-first search, A*:
 
-Cheapest Cost First: always picks the cheapest path. After new paths are added, it still picks the shortest. So it goes back and forth. Optimal as well.
+Remember: Frontier set, Explored set and UnExplored set. Remember, going from Arad to Romania
 
-DFS: Can go on and on. Not optimal. But advantage is very few past states required to store. Of order of n.
+BFS, CFS: are complete, optimal but require 2^n storage for operation
+DFS: non-optimal, non-complete but requires only n storage space.
 
-A* search: its combo of bfs with heuristic.
+
+BFS or Shortest Path first
+-------------------------- 
+Shortest paths are added first. For e.g 1 hop away followed by 2 hops away etc.
+When you pick one option (break a tie if there's one) from 1 hop payh, you then add the selected point's neighbors to the list. These new neighbors cost would be now 2 hops. So, after removing the visited notes, you go back
+to the remaining 1 hop path. And work your way through until you find the destination.
+
+The new paths are added to the end of the path list. Might need to store 2^n.
+
+Cheapest Cost First
+--------------------
+always picks the cheapest path. After new paths are added, it still picks the shortest even if it means going back many levels.. So it goes back and forth. Optimal as well.
+
+Depth First Search
+ Can go on and on. Not optimal. But advantage is very few past states required to store. Of order of n if you don't have to store the explored set.
+
+Uniform Cost search
+-------------------
+Remember spanning out in concentric circles till you hit goal.
+
+Greedy Best-first Search
+---------------------- 
+is more directed. Instead of spanning out in all directions, you start with a constraint : lets say, with an estimate of  st. line distance between starting point and goal. This would mean you'd only move forward in the direction of direct as-the-crow-flies path between start and destination.
+Now you keep going in that direction alone, until you find your target. Howeverm if you encounter an obstacle in the st. line path, this algo would fail in finding the best path esp when the option would have been to deviate from the path to find the best path.
+
+A* search
+----------
+combines the best of Uniform Cost and Greedy best first search. Look at it as a combo of bfs with heuristic.
 
 goal is to minimize function 
 f = g + h
 where g - path cost as before
-	  h - heuristic to estimate cost to reach goal from that state with cost g. For destination, it can be st. line distance from 
-	  		intermediate point to the goal.
+	  h - heuristic to estimate cost to reach goal from the state with cost g. For destination, it can be st. line distance from intermediate point to the goal. Remember g is path cost, which may be winding roads, so need to be straight line, whereas h is estimate of st. line distance. Again go back to Romania example
 
-You always pick the minimum f as you continue exploring.
+You always pick the minimum f as you continue exploring to find the cheapest path, shortest path.
+
+As long cost of heuristic h is < true cost, the algo  will always return the lowest cost path. In this case,
+h is called optimistic, admissible.
+
+How you come up with h is the where all the intelligence is. 
+In general, all admissible h you come up with, max(h1,h2, h3) is best used as that would result in fewest searches
+to the goal.
+
+Simulated Annealing:
+========================
+You are tasked with finding highest point in  2 dimensional mountain range. You can do random start and and go either side and keep track of the maximum.
+Else you pick a random point, if the step size to either right or left is increasing , keep going.
+If the step size results in decreasing height, then do a random swing to determine the next point to measure.
+This random swing is chosen with probability of  e^(Expected value delta/ T) . Initially start with high  like inifnity.
+Now, we get e^0 = 1. As T gets smaller and smaller, the probability of pick gets smaller and smaller. When T reaches zero, we have our target answer.
 
 
 
+Backtracking search and Constraint Propagation
+============================================
+
+For Australia painting example:
+
+Least Constraining Value:
+Take the example of colorin Australia map using 3 colors. You can start from left. At some point, you have to decide which color to use on which region. If you pick a color for current region that facilitates making future choice  it is called Least Constraining Value.
+
+Minimum Remaining Value:
+Another strategy for backtracking search  is to pick the region that has least choices to pick from. 
+Refer to "Constraint Satisfaction" section of Udacity AI
+
+Forward Checking:
+
+Start with a palette of all colors for all regions. Pick one color. Remove these colors from palette of neighbors.
+Keep doing this until you run out of colors for one region. At which point you backtrack.
 
 
+Arc Consistent:
+This means there's no region which runs out of colors.
+
+Propositional Logic:
+======================
+Same as Boolean logic. But remember,  truth tables have slight different meaning for these two operations
+P => Q (P implies Q) and
+P <=> Q (equivalent)
+ When P is true, and Q is false, the outcome is false.
+
+Propositional logic is when the variables can be in either True, False 
+In probablility, the variables get a value.
+
+What is a model?
+Model is a value for each propositional symbol e.g. Model is {P: True, Q: False}
+
+If all conditions in a model are satisfied, the model or sentence is "valid"
+if some conditons are satisfied, the model is "satisfiable"
+If all conditions are false, the model is "unsatisfiable"
+
+ First Order Logic:
+====================
+Made up for variables, functions, relations, quantifiers to model real world scenario. Represents objects. 
+Two quantifiers are:  "For all"(For all x ...) given by symbol A, and  "There exists" (There exists an x ...) given by inverted A.
+
+Remember ^ is AND, v is OR and there's NOT. This is propositional logic.
+
+When the action is non-deterministic, you start introducing Loop() which would loop
+if the action doesn't cause change in state. Remember, the " move right" operation of vacuum cleaner won't always succeeed if the vaccuum wheel slips. You have to represent that part as loop.
+
+
+Action Schema
+==================
+
+Remember the problem of shipping cargo from one to airport to another. This action can be done for 100's of cargo 
+ flying from any of the 100's airports. The states can be generically represented as:
+
+ Action (Fly(p,from,to))
+    PRECOND: Plane(p) ^  Aiport(from) ^ Airport(to) ^ At (p,from)
+    EFFECT: Not(At(p,from)) ^ At(p, to)
+
+Action (Load(c,p,a))
+    PRECOND: At(c,a) ^ At(p,a) ^ Cargo(c) ^ Plane(p) ^ Airport(a)
+    EFFECT: Not(At (c,a)) and In(c,p) 
+
+Action (Unload(c,p,a))
+    PRECOND: In(c, p) ^ At(p,a) ^ Cargo(c) ^ Plane(p) ^ Airport(a)
+    EFFECT:   At(c,a)) and Not(In(c,p)) 
+
+
+
+Here every action would result in a new state. 
+For e.g. when cargo C, is loaded onto plane at SFO. This would result in a state of cargo loaded on plane P.
+We keep moving forward until we reach a goal. This is called  "Progression State Space search".
+
+The opposite of this approach is "Regression State Space search " where we start from Goal State and search back.
+
+
+FIRST ORDER LOGIC FOR PLANNING
+===============================
+
+Actions: objects E.g.   Fly(p,from,to) is an object
+Predicates that can vary from one state to another are called Fluents.
+Predicates:  like plane is at airport x (i.e. )At(p,x) are called Fluents 
 
 
