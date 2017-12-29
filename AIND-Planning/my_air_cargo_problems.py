@@ -70,20 +70,27 @@ class AirCargoProblem(Problem):
 
             :return: list of Action objects
             """
-            c = self.cargos
-            p= self.planes
-            a = self.airports
             loads = []
+            cargos = self.cargos
+            planes = self.planes
+            airports = self.airports
+
             for i in range(len(self.cargos)):
-                precond_pos =  [ expr("At({}, {})".format(c[i], a[i])),
-                                expr("At({}, {})".format(p[i], a[i]))]
-                precond_neg = [expr("In({}, {})".format(c[i], p[i]))]
-                effect_add = [expr("In({}, {})".format(c[i], p[i]))]
-                effect_rem = [expr("At({}, {})".format(c[i], a[i]))]
-                load = Action(expr("Load({}, {}, {})".format(c[i], p[i], a[i])),
-                                         [precond_pos, precond_neg],
-                                         [effect_add, effect_rem])
-                loads.append(load)
+                for j in range(len(self.planes)):
+                    for k in range(len(self.airports)):
+                        #ca_index = self.state_map.index(expr("At({}, {})".format(cargos[i], airports[k])))
+                        #if self.initial_state_TF[ca_index] == 'T':
+                            #pa_index = self.state_map.index(expr("At({}, {})".format(planes[j], airports[k])))
+                            #if self.initial_state_TF[pa_index] == 'T':
+                        precond_pos =  [ expr("At({}, {})".format(cargos[i], airports[k])),
+                        expr("At({}, {})".format(planes[j], airports[k]))]
+                        precond_neg = [expr("In({}, {})".format(cargos[i], planes[j]))]
+                        effect_add = [expr("In({}, {})".format(cargos[i], planes[j]))]
+                        effect_rem = [expr("At({}, {})".format(cargos[i], airports[k]))]
+                        load = Action(expr("Load({}, {}, {})".format(cargos[i], planes[j], airports[k])),
+                                 [precond_pos, precond_neg],
+                                 [effect_add, effect_rem])
+                        loads.append(load)
             return loads
             # L1 = Action(expr("Load(C1, P1, SFO)"), 
             #                 [  [
@@ -150,20 +157,27 @@ class AirCargoProblem(Problem):
 
             :return: list of Action objects
             """
-            c = self.cargos
-            p= self.planes
-            a = self.airports
+            cargos = self.cargos
+            planes = self.planes
+            airports = self.airports
             unloads = []
+
             for i in range(len(self.cargos)):
-                precond_pos =  [ expr("In({}, {})".format(c[i], p[i])),
-                                expr("At({}, {})".format(p[i], a[i]))]
-                precond_neg = [expr("At({}, {})".format(c[i], a[i]))]
-                effect_add = [expr("At({}, {})".format(c[i], a[i]))]
-                effect_rem = [expr("In({}, {})".format(c[i], p[i]))]
-                unload = Action(expr("Unload({}, {}, {})".format(c[i], p[i], a[i])),
-                                         [precond_pos, precond_neg],
-                                         [effect_add, effect_rem])
-                unloads.append(unload)
+                for j in range(len(self.planes)):
+                    for k in range(len(self.airports)):
+                        # cp_index = self.state_map.index(expr("In({}, {})".format(cargos[i], planes[j])))
+                        # if self.initial_state_TF[cp_index] == 'T':
+                        #     pa_index = self.state_map.index(expr("At({}, {})".format(planes[j], airports[k])))
+                        #     if self.initial_state_TF[pa_index] == 'T':
+                        precond_pos =  [ expr("In({}, {})".format(cargos[i], planes[j])),
+                        expr("At({}, {})".format(planes[j], airports[k]))]
+                        precond_neg = [expr("At({}, {})".format(cargos[i], airports[k]))]
+                        effect_add = [expr("At({}, {})".format(cargos[i], airports[k]))]
+                        effect_rem = [expr("In({}, {})".format(cargos[i], planes[j]))]
+                        unload = Action(expr("Unload({}, {}, {})".format(cargos[i], planes[j], airports[k])),
+                                 [precond_pos, precond_neg],
+                                 [effect_add, effect_rem])
+                        unloads.append(unload)
             return unloads
 
             # UL1 = Action(expr("Unload(C1, P1, JFK)"), 
@@ -257,14 +271,16 @@ class AirCargoProblem(Problem):
                 for to in self.airports:
                     if fr != to:
                         for p in self.planes:
-                            precond_pos = [expr("At({}, {})".format(p, fr)),
-                                           ]
+                            # pa_index = self.state_map.index(expr("At({}, {})".format(p, fr)))
+                            # if self.initial_state_TF[pa_index] == 'T':
+                            precond_pos = [expr("At({}, {})".format(p, fr))
+                                       ]
                             precond_neg = []
                             effect_add = [expr("At({}, {})".format(p, to))]
                             effect_rem = [expr("At({}, {})".format(p, fr))]
                             fly = Action(expr("Fly({}, {}, {})".format(p, fr, to)),
-                                         [precond_pos, precond_neg],
-                                         [effect_add, effect_rem])
+                                     [precond_pos, precond_neg],
+                                     [effect_add, effect_rem])
                             flys.append(fly)
             return flys
 
@@ -360,6 +376,7 @@ class AirCargoProblem(Problem):
         """
         # TODO implement (see Russell-Norvig Ed-3 10.2.3  or Russell-Norvig Ed-2 11.2)
         count = 0
+        count = len(self.goal)
         return count
 
 
@@ -466,7 +483,7 @@ def air_cargo_p3() -> AirCargoProblem:
            expr('At(P1, ORD)'),
            expr('At(P2, SFO)'),
            expr('At(P2, ATL)'),
-           expr('At(P2, ORD)'),
+           expr('At(P2, ORD)')
            ]
     init = FluentState(pos, neg)
     goal = [expr('At(C1, JFK)'),

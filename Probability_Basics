@@ -22,3 +22,127 @@ p=-1 harmonic mean
 p =-inf returns min of values
 p = max returns max of values
 
+
+
+CONDITIONAL PROBABILITY
+
+Conditionally Independent:
+==========================
+To give a precise example: Say you roll a blue die and a red die. The two results are independent of each other. Now you tell me that the blue result isn't a 66 and the red result isn't a 11. You've given me new information, but that hasn't affected the independence of the results. By taking a look at the blue die, I can't gain any knowledge about the red die; after I look at the blue die I will still have a probability of 1/51/5 for each number on the red die except 11. So the probabilities for the results are conditionally independent given the information you've given me. But if instead you tell me that the sum of the two results is even, this allows me to learn a lot about the red die by looking at the blue die. For instance, if I see a 33 on the blue die, the red die can only be 11, 33 or 55. So in this case the probabilities for the results are not conditionally independent given this other information that you've given me. This also underscores that conditional independence is always relative to the given condition -- in this case, the results of the dice rolls are conditionally independent with respect to the event "the blue result is not 66 and the red result is not 11", but they're not conditionally independent with respect to the event "the sum of the results is even".
+
+https://math.stackexchange.com/questions/23093/could-someone-explain-conditional-independence   
+
+
+Bayes Network
+====================
+- P(A,B) =  P(A)* P(B)  when A and B are independent
+
+    When not independent,
+    P(A,B) = P(B/A)*P(A) = P(A/B)*P(B)
+
+    This implies :
+    P(B/A) = P(A/B)*P(B) / P(A)
+
+
+- P(not X|Y) = 1 - P(X|Y)
+
+- Total Probability:
+     P(Y) =  P(Y|X1)*P(X1)+P(Y/X2)*P(X2)+ ... for all X
+
+
+
+TWO types of Bayes Networks
+===========================
+
+Type 1
+=======
+
+             --->  Test1 (T1)
+            |
+            |
+(C) Cancer ----
+            |
+            |
+             ---->  Test2 (T2)
+
+
+Here we take tests to determine whether someone has cancer or not. By themselves, test1 and test2 are independent.
+Outcome of test1 has not bearing on test2. So test1 and test2 are conditionally independent.
+
+In other words, C separately causes T1 and T2. That is,
+
+P(T1|C,T2) = P(T1|C)
+and 
+P(T2|C,T1) = P(T2|C)
+
+- Conditional independence doesn't imply independent and vice versa.
+
+
+
+Type 2 (Explain Away effect)
+=========
+
+(S)Sunny-------
+            |
+            |
+            ------->  Happiness(H)
+            |
+            |
+(R)PayRaise ---
+
+Here happiness could be caused by Sunny or Pay Raise or both. If I told you it's cloudy, and you are happy,
+then it's lot likely that pay raise caused happiness . So here, Pay Raise and Sunny are conditionally dependent on
+Happiness but independent unconditionally.
+
+here,
+ P(R|S) = P(R)
+ P(S|R) = P(S)
+
+
+
+Joint Probability
+=================
+- Denoted by P(X,Y) for two variables X & Y.
+
+- For a Bayes net, it is given by P(indepent variables)*P(Dependent variables.)
+  Remember, for dependent variables, number of parameters in Bayes network is given by 2^ k where k is number of inputs going into that state. Refer to Car Repair example  Of Lesson 18, Quiz 16
+
+- The Bayes Net inference is made over all possible values of hidden variables. Refer to Lesson 19.
+    Evidence: The variables whose values are known
+    Query: The variables whose probability need to be determined.
+    Hidden: The variables (or states) whose variables aren't given, but they are needed to answer the query.
+
+
+
+
+
+
+
+
+EXPLANATION FOR BAYES NET QUIZ of P(test2/test 1)
+===============================
+
+The formula is the total probability formula, but the extra variables make it look more complicated. Let's try to break it down:
+
+The total probability for a variable is given in terms of all possible values for the other variables. So if we wanted the total probability of B and the only other variable was A, we would have
+
+P(B) = P(B|+A)P(+A) + P(B|-A)P(-A)
+
+Ok, so far, so good. Now let's say we want the total probability of a positive test 2 result, +2:
+
+P(+2) = P(+2|+1, C)P(C|+1) + P(+2|-1, C)P(C|-1) + P(+2|+1, -C)P(-C|+1) + P(+2|-1, -C)P(-C|-1)
+
+Notice that I expressed each conditional probability in terms of whether or not we know the test result for test 1. I think that's because our original problem states that we want to condition the +2 probability on a +1 result.
+
+And speaking of that +1 result, that changes our total probability. The equation I wrote above takes into account all possible values for test 1 (a true "total" probability), but the probability we are looking for is P(+2|+1). That means we only want the total probability conditional on a specific value for test 1, so we can get rid of any terms where test 1 is not positive. That gives us:
+
+P(+2) = P(+2|+1, C)P(C|+1) + P(+2|+1, -C)P(-C|+1)
+
+And this is the equation Sebastian starts with in the solution. He then removes more terms by pointing out the conditional independence of test 1 and C and shows we can actually ignore the test results in cases where we know C already.
+
+
+Because in this case, we have been given +1 as part of the problem. That is, the problem told us we have a positive result for test 1, so that is given. We are then using probabilities for C given the fact that we know the +1.
+
+
+https://discussions.udacity.com/t/lesson-8-where-did-that-total-probability-equation-come-from/240163
+
