@@ -32,9 +32,9 @@ To give a precise example: Say you roll a blue die and a red die. The two result
 
 https://math.stackexchange.com/questions/23093/could-someone-explain-conditional-independence   
 
-
-Bayes Network
-====================
+================================================================================
+                            BAYES NET
+================================================================================
 - P(A,B) =  P(A)* P(B)  when A and B are independent
 
     When not independent,
@@ -115,10 +115,6 @@ Joint Probability
 
 
 
-
-
-
-
 EXPLANATION FOR BAYES NET QUIZ of P(test2/test 1)
 ===============================
 
@@ -146,3 +142,68 @@ Because in this case, we have been given +1 as part of the problem. That is, the
 
 https://discussions.udacity.com/t/lesson-8-where-did-that-total-probability-equation-come-from/240163
 
+
+============================================================
+            HIDDEN MARKOV MODEL (HMM)
+============================================================
+- Markov chain is where states and observations are the same. 
+- HMM is where each of the hidden states has probability assigned to each of observations. 
+
+
+https://web.stanford.edu/~jurafsky/slp3/9.pdf
+http://hmmlearn.readthedocs.io/en/latest/tutorial.html
+
+- HMM has hidden states in addition to observation. E.g weather hot and cold for number of icecreams eaten in a day.
+- HMM contains:
+    - Hidden State
+    - Observation Sequence.
+
+- Probabilities to consider are:
+    - Transition probability - going from one state to next.  (A)
+    - Emission probability -  probability of making an observattion in a given state (B)
+
+- Three tasks with HMM are:
+
+1)Likelihood calculation
+ -------------------------- 
+    Compute likelihood of icecream sequence: 313 (eating 3,1,3 icecreams on 3 successive days)
+
+2) Decoding 
+ -------------------------- 
+ What weather sequence can best result  in a given sequence. E.g. 313 corresponds to Hot,Hot,Hot(HHH)
+ Used Vtierbi decoding. Just like above , but computex max instead of summing it up
+
+ 3) Learning
+----------------------
+ Learn A and B given observation sequence for a given set of hidden states.
+
+
+
+ BIC
+===========
+
+The wikipedia page on HMM describes the parameters as the transition probabilities and the emission probabilities (and in the post, it includes the initial probabilities). The free parameters are the variables that the model is trying to fit.
+
+For the transition matrix, it's going to be a N x N matrix, where N is the number of states. The free parameters for the transition matrix is N * (N - 1). This is because the rows must sum up to one, so the last value is fixed to whatever value to add up to 1.
+
+The number of free parameters for the emission matrix depends on how it's setup (for GaussianHMM18, it's defined under covariance_type in the constructor and is "diag" by default"). If the model has M features, then there are M means and M diagonal values in the covariance matrix, for 2 * M per state. The final total is 2 * N * M. You can see the means and the covars with the GaussianHMM.means_ and GaussianHMM.covars_ attributes.
+
+Finally, for the initial states, it's just N-1 (An array of probabilities that must add up to 1). One last thing to note is that if you fix the probabilities, you must subtract that from the number of free parameters.An example of that would be forbidding a transition from State 1 to State 2 (value of 0 in the transition matrix). Another example would be fixing the initial probabilities to always start in state 1, completely removing the initial probabilities from the equation.
+
+DIC
+=======
+
+DIC = log(P(X(i))) + sum(log(X(j where j != i)))
+
+In the equation log(P(X(i)) is simply the log likelyhood (score) that is returned from the model by calling model.score.
+
+The log(P(X(j)); where j != i is just the model score when evaluating the model on all words other than the word for which we are training this particular model.
+
+Think of it as, a way for us to find which of all the models that we've, models our current word really well, but does really poorly for all other words. That way, we increase the chance that when we predict the model really correctly predicts the correct word and not any of the other words (because we've ensured that it does really badly on the other words).
+
+
+SelectorCV
+===========
+
+this is base on kfold
+ Remember that, when we are doing CV, we fit the model over a part of the data: X_train, length_train. This helps us to save some data to test, and don’t test the same train data. But once we have decided, the model is going to be built over X, lengths. In other words, after you have chosen the right number of components, you will need to train another model over the full data .

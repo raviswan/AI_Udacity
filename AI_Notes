@@ -201,4 +201,9 @@ Actions: objects E.g.   Fly(p,from,to) is an object
 Predicates that can vary from one state to another are called Fluents.
 Predicates:  like plane is at airport x (i.e. )At(p,x) are called Fluents 
 
+For cargo shipping problem across airports, you define initial state as bunch of positive fluents
+and negative fluents.  Both fluents put together make Initial State.
+On this initial state, you take some action
+
+
 
