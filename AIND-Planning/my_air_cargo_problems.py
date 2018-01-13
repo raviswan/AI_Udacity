@@ -84,7 +84,8 @@ class AirCargoProblem(Problem):
                             #if self.initial_state_TF[pa_index] == 'T':
                         precond_pos =  [ expr("At({}, {})".format(cargos[i], airports[k])),
                         expr("At({}, {})".format(planes[j], airports[k]))]
-                        precond_neg = [expr("In({}, {})".format(cargos[i], planes[j]))]
+                        precond_neg = []
+                        #precond_neg = [expr("In({}, {})".format(cargos[i], planes[j]))]
                         effect_add = [expr("In({}, {})".format(cargos[i], planes[j]))]
                         effect_rem = [expr("At({}, {})".format(cargos[i], airports[k]))]
                         load = Action(expr("Load({}, {}, {})".format(cargos[i], planes[j], airports[k])),
@@ -171,7 +172,8 @@ class AirCargoProblem(Problem):
                         #     if self.initial_state_TF[pa_index] == 'T':
                         precond_pos =  [ expr("In({}, {})".format(cargos[i], planes[j])),
                         expr("At({}, {})".format(planes[j], airports[k]))]
-                        precond_neg = [expr("At({}, {})".format(cargos[i], airports[k]))]
+                        precond_neg = []
+                        #precond_neg = [expr("At({}, {})".format(cargos[i], airports[k]))]
                         effect_add = [expr("At({}, {})".format(cargos[i], airports[k]))]
                         effect_rem = [expr("In({}, {})".format(cargos[i], planes[j]))]
                         unload = Action(expr("Unload({}, {}, {})".format(cargos[i], planes[j], airports[k])),
@@ -376,7 +378,11 @@ class AirCargoProblem(Problem):
         """
         # TODO implement (see Russell-Norvig Ed-3 10.2.3  or Russell-Norvig Ed-2 11.2)
         count = 0
-        count = len(self.goal)
+        kb = PropKB()
+        kb.tell(decode_state(node.state, self.state_map).pos_sentence())
+        for clause in self.goal:
+           if clause not in kb.clauses:
+              count += 1
         return count
 
 

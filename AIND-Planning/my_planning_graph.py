@@ -312,10 +312,10 @@ class PlanningGraph():
         #   action node is added, it MUST be connected to the S node instances in the appropriate s_level set.
         # for each fluent in the initial state, add the correct literal PgNode_s
         self.a_levels.append(set()) 
-        # print("------------------")
-        # print("State at Level {} contains: ".format(level))
-        # for s in self.s_levels[level]:
-        #     print("({}, {}".format(s.symbol, s.is_pos))
+        print("------------------")
+        print("State at Level {} contains: ".format(level))
+        for s in self.s_levels[level]:
+            print("({}, {}".format(s.symbol, s.is_pos))
         for literal in self.all_actions:
             actionNode = PgNode_a(literal)
 
@@ -529,16 +529,17 @@ class PlanningGraph():
         :return: int
         """
         level_sum = 0
-        goals = self.problem.goal
+        goals = set(self.problem.goal)
 
         # TODO implement
         # for each goal in the problem, determine the level cost, then add them together
+        # The variable goals should be defined as set and hence you should break 
+        # from the inner loop after removing the goal.
         for i, s in enumerate(self.s_levels):
             for k in s:
                 for g in goals:
                     if k.symbol == g and k.is_pos:
                         level_sum += i
-                        
                         goals.remove(g)
-
+                        break
         return level_sum

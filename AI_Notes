@@ -204,6 +204,111 @@ Predicates:  like plane is at airport x (i.e. )At(p,x) are called Fluents
 For cargo shipping problem across airports, you define initial state as bunch of positive fluents
 and negative fluents.  Both fluents put together make Initial State.
 On this initial state, you take some action
+https://towardsdatascience.com/ai-planning-historical-developments-edcd9f24c991
+
+Planning Graph
+===============
+Way to solve determinstic problems that has exponential space, but planning graph
+reduces it to polynomial space. Planning graph is made up of levels and actions.
+And the problem is solved until we reach a point where two levels become identical.
+ie. Action on one level doesn't change the fliuents. That indicates to us that we have arrived
+at the solution.
+
+The problem starts with Initial state of Level0 followed by Action State A0.
+A0 on Level 0 fluents lead to Level 1. A1 on Level1 fluent leads to Level 2 etc.
+Refer to Eat Cake example.
+
+To determine a heuristic, you can do:
+
+1) Ignore predconditions: which treats every action applicable in every state. No preconditions,
+so at every level, number of goals unsatisfied is the heuristic. Keep summing it up unitl the problem is solved
+2) Level-Sum: This heuristic is obtained by counting the level cost of goal fluents.
+You find the level at which a goal is first satisfied. That becomes the level cost for that goal.
+Likewise, do it for all goals and sum all the level costs.
+
+=============
+ASL RECOGNIZER:
+=============
+Here every video is split into frames. From every frame, we note the x,y values of
+nose and right and left hand. These values are stored in a table.
+From these values, we get the metric called features. E.g.
+leftx,rightx, lefty, right-y, nose-x, nosey. From these basic, we can
+get many different feature set as follows:
+1)features_ground,
+2)features_polar
+3)features_delta
+4)features_diff
+
+Next, we have a training set. This consists of a file with frame data for a number of
+commonly occuring words.
+Each word will be contained in multiple frames with start-frame and end-frame. And this would
+be repeated many times.
+What you do is group these words in a dataframedf) using (pandas) and store it in dictionary.
+For e.g. from the file, we process dict in this form like :
+
+{   "JOHN": [ ([occurence 1start frame feature] ...[end-frame feature]
+            [occurnece 2 start framefeature] ...[end-frame feature]
+            [occurence 3 start framefeature] ...[end-frame feature]), 
+                [
+                Total frame Length of 1st occurence, 
+                Total Frame length of second occurence, 
+                Total Frame length of third occurence
+                ]
+           ]
+    "MARY": [ [occurence 1start frame feature] ...[end-frame feature]
+                [occurnece 2 start framefeature] ...[end-frame feature]
+                [occurence 3 start framefeature] ...[end-frame feature]
+               ]
+                [
+                Total frame Length of 1st occurence, 
+                Total Frame length of second occurence, 
+                Total Frame length of third occurence
+                ]
+            ]
+
+}
+
+Once you have the training set, the next step is to find the number of hidden states in HMM
+using this data. 
+To do this, you have to pass the training data through different ModelSelectors  (BIC, DIC 
+or CrossValidation Folds).
+
+Each word is based tried different states (from 2 to 15) and the one with max. likelihood value is predicted.
 
 
+What's the significance of Gaussian distribution here. It implies that every observable for every hidden 
+state is modeled as a gaussian distribution. remember the weather , ice-cream example. Instead of 
+giving 1,2,3 ice-creams, we are gonna have a Gaussian distributed ice-cream values for every state 
+in the HMM.
 
+Each word will have its own Gaussian HMM model object that is returned by the Model Selectors below.
+
+BIC: It penalizes longer models. Has two terms, The lower the value, the better it is
+====
+DIC: 
+====
+It wants to find a state count that gives high logL for current value while at the same time minimizng 
+logL count for other words.
+
+Crossvalidation Folds(CV)
+=========================
+Here , training data is split into folds. In each fold, one part of the data
+is used to train the model, which is then run on the test part . The score from each  fold is summed and eventually
+ averaged across all folds
+ This average is computed for model state count (n=2 to 15), and the state count that has the max. average
+ is picked to be the best model. This process is called ModelSelector.
+
+
+And once the operation is complete, we have a dict of words as :
+{word: BestHMMModel object}
+
+
+Last step is to guess the words:
+Here we take the test data (stored in rows - one for each word)
+Take the frame data for each word (i.e. each row) and run it through the 
+HMM dictionary. That is, you determine model corresponding to which word outputs the highest logL value
+for the given row of test data. Store that word as the best guess. 
+Do this for the words in the test data. And at the end of it , count the % of correct guesses.
+
+
+This project used Jupyter and Panda
